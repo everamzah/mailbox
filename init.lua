@@ -6,7 +6,7 @@ local mailbox = {}
 screwdriver = screwdriver or {}
 
 minetest.register_craft({
-	output = "xdecor:mailbox",
+	output = "mailbox:mailbox",
 	recipe = {
 		{"default:steel_ingot", "default:steel_ingot", "default:steel_ingot"},
 		{"dye:red", "default:paper", "dye:red"},
