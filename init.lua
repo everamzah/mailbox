@@ -78,10 +78,15 @@ function mailbox.get_formspec(pos, owner, fs_type)
 
 	if fs_type == 1 then
 		return "size[8,9]"..xbg..default.get_hotbar_bg(0,5.25)..
-			"label[0,0;You received...]list[nodemeta:"..spos..";mailbox;0,0.75;8,4;]list[current_player;main;0,5.25;8,4;]"
+			"label[0,0;You received...]" ..
+			"list[nodemeta:"..spos..";mailbox;0,0.75;8,4;]" ..
+			"list[current_player;main;0,5.25;8,4;]" ..
+			"listring[]"
 	else
 		return "size[8,5]"..xbg..default.get_hotbar_bg(0,1.25)..
-			"label[0.5,0;Send your goods\nto "..owner.." :]list[nodemeta:"..spos..";drop;3.5,0;1,1;]list[current_player;main;0,1.25;8,4;]"
+			"label[0.5,0;Send your goods\nto "..owner.." :]" ..
+			"list[nodemeta:"..spos..";drop;3.5,0;1,1;]" ..
+			"list[current_player;main;0,1.25;8,4;]" ..
+			"listring[]"
 	end
 end
-
