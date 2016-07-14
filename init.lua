@@ -32,12 +32,13 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 
 	if fields.books_only then
 		local pos = minetest.string_to_pos(formname:sub(17))
-		if minetest.get_node(pos).name == "mailbox:mailbox" then
-			minetest.swap_node(pos,
-					{name = "mailbox:letterbox"})
+		local node = minetest.get_node(pos)
+		if node.name == "mailbox:mailbox" then
+			node.name = "mailbox:letterbox"
+			minetest.swap_node(pos, node)
 		else
-			minetest.swap_node(pos,
-					{name = "mailbox:mailbox"})
+			node.name = "mailbox:mailbox"
+			minetest.swap_node(pos, node)
 		end
 	end
 end)
