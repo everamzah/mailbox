@@ -146,6 +146,7 @@ minetest.register_node("mailbox:letterbox", {
 	on_rotate = screwdriver.rotate_simple,
 	sounds = default.node_sound_defaults(),
 	paramtype2 = "facedir",
+	drop = "mailbox:mailbox",
 	after_place_node = mailbox.after_place_node,
 	on_rightclick = mailbox.on_rightclick,
 	can_dig = mailbox.can_dig,
