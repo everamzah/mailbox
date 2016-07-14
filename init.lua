@@ -20,14 +20,17 @@ function mailbox.get_formspec(pos, owner, fs_type)
 			"list[nodemeta:" .. spos .. ";mailbox;0,1;8,4;]" ..
 			"list[current_player;main;0,5.5;8,1;]" ..
 			"list[current_player;main;0,6.75;8,3;8]" ..
-			"listring[]" ..
+			"listring[nodemeta:" .. spos .. ";mailbox]" ..
+			"listring[current_player;main]" ..
 			"button_exit[7,0;1,1;exit;X]"
 	else
-		return "size[8,5]" .. xbg .. default.get_hotbar_bg(0, 1.25) ..
-			"label[0.5,0;Send your goods\nto " .. owner .. " :]" ..
+		return "size[8,5.5]" .. xbg .. default.get_hotbar_bg(0, 1.5) ..
+			"label[0,0;Send your goods\nto " .. owner .. " :]" ..
 			"list[nodemeta:" .. spos .. ";drop;3.5,0;1,1;]" ..
-			"list[current_player;main;0,1.25;8,4;]" ..
-			"listring[]"
+			"list[current_player;main;0,1.5;8,1;]" ..
+			"list[current_player;main;0,2.75;8,3;8]" ..
+			"listring[nodemeta:" .. spos .. ";drop]" ..
+			"listring[current_player;main]"
 	end
 end
 
@@ -85,24 +88,29 @@ mailbox.can_dig = function(pos, player)
 end
 
 mailbox.on_metadata_inventory_put = function(pos, listname, index, stack, player)
-	local inv = minetest.get_meta(pos):get_inventory()
 	if listname == "drop" then
+		local inv = minetest.get_meta(pos):get_inventory()
 		if inv:room_for_item("mailbox", stack) then
 			inv:remove_item("drop", stack)
 			inv:add_item("mailbox", stack)
-		else
-			print("hi?")
-			minetest.chat_send_player(player:get_player_name(), "Mailbox full.")
 		end
 	end
 end
 
-mailbox.allow_metadata_inventory_put = function(pos, listname, _, stack, _)
+mailbox.allow_metadata_inventory_put = function(pos, listname, index, stack, player)
 	if listname == "drop" then
+		if minetest.get_node(pos).name == "mailbox:letterbox" and
+				stack:get_name() ~= "default:book_written" then
+			return 0
+		end
+
 		local meta = minetest.get_meta(pos)
 		local inv = meta:get_inventory()
 		if inv:room_for_item("mailbox", stack) then
 			return -1
+		else
+			minetest.chat_send_player(player:get_player_name(), "Mailbox full.")
+			return 0
 		end
 	end
 	return 0
