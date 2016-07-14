@@ -7,15 +7,21 @@ screwdriver = screwdriver or {}
 
 
 function mailbox.get_formspec(pos, owner, fs_type)
-	local xbg = default.gui_bg..default.gui_bg_img..default.gui_slots
+	local selected = "false"
+	if minetest.get_node(pos).name == "mailbox:letterbox" then
+		selected = "true"
+	end
+	local xbg = default.gui_bg .. default.gui_bg_img .. default.gui_slots
 	local spos = pos.x .. "," ..pos.y .. "," .. pos.z
 
 	if fs_type == 1 then
-		return "size[8,9]" .. xbg .. default.get_hotbar_bg(0, 5.25) ..
-			"checkbox[0,0;books_only;Only allow written books;false]" ..
-			"list[nodemeta:" .. spos .. ";mailbox;0,0.75;8,4;]" ..
-			"list[current_player;main;0,5.25;8,4;]" ..
-			"listring[]"
+		return "size[8,9.5]" .. xbg .. default.get_hotbar_bg(0, 5.5) ..
+			"checkbox[0,0;books_only;Only allow written books;" .. selected .. "]" ..
+			"list[nodemeta:" .. spos .. ";mailbox;0,1;8,4;]" ..
+			"list[current_player;main;0,5.5;8,1;]" ..
+			"list[current_player;main;0,6.75;8,3;8]" ..
+			"listring[]" ..
+			"button_exit[7,0;1,1;exit;X]"
 	else
 		return "size[8,5]" .. xbg .. default.get_hotbar_bg(0, 1.25) ..
 			"label[0.5,0;Send your goods\nto " .. owner .. " :]" ..
@@ -78,11 +84,16 @@ mailbox.can_dig = function(pos, player)
 	return inv:is_empty("mailbox") and player and player_name == owner
 end
 
-mailbox.on_metadata_inventory_put = function(pos, listname, _, stack, _)
+mailbox.on_metadata_inventory_put = function(pos, listname, index, stack, player)
 	local inv = minetest.get_meta(pos):get_inventory()
-	if listname == "drop" and inv:room_for_item("mailbox", stack) then
-		inv:remove_item("drop", stack)
-		inv:add_item("mailbox", stack)
+	if listname == "drop" then
+		if inv:room_for_item("mailbox", stack) then
+			inv:remove_item("drop", stack)
+			inv:add_item("mailbox", stack)
+		else
+			print("hi?")
+			minetest.chat_send_player(player:get_player_name(), "Mailbox full.")
+		end
 	end
 end
 
@@ -117,13 +128,13 @@ minetest.register_node("mailbox:mailbox", {
 })
 
 minetest.register_node("mailbox:letterbox", {
-	description = "Mailbox",
+	description = "Letterbox (you hacker you!)",
 	tiles = {
 		"mailbox_letterbox_top.png", "mailbox_letterbox_bottom.png",
 		"mailbox_letterbox_side.png", "mailbox_letterbox_side.png",
 		"mailbox_letterbox.png", "mailbox_letterbox.png",
 	},
-	groups = {cracky = 3, oddly_breakable_by_hand = 1},
+	groups = {cracky = 3, oddly_breakable_by_hand = 1, not_in_creative_inventory = 1},
 	on_rotate = screwdriver.rotate_simple,
 	sounds = default.node_sound_defaults(),
 	paramtype2 = "facedir",
