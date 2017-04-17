@@ -21,7 +21,8 @@ function mailbox.get_formspec(pos, owner, fs_type)
 			"list[current_player;main;0,5.5;8,1;]" ..
 			"list[current_player;main;0,6.75;8,3;8]" ..
 			"listring[nodemeta:" .. spos .. ";mailbox]" ..
-			"listring[current_player;main]" ..
+		   "listring[current_player;main]" ..
+		   "button_exit[5,0;1,1;unrent;Unrent]"..
 			"button_exit[7,0;1,1;exit;X]"
 	else
 		return "size[8,5.5]" .. xbg .. default.get_hotbar_bg(0, 1.5) ..
@@ -38,7 +39,20 @@ minetest.register_on_player_receive_fields(function(player, formname, fields)
 	if not formname:match("mailbox:mailbox_") then
 		return
 	end
-
+	if fields.unrent then
+	   local pos = minetest.string_to_pos(formname:sub(17))
+	   local meta = minetest.get_meta(pos)
+	   local inv = meta:get_inventory()
+	   if inv:is_empty("mailbox") then
+	      local node = minetest.get_node(pos)
+	      node.name = "mailbox:mailbox_free"
+	      minetest.swap_node(pos, node) -- preserve Facedir
+	      --   minetest.swap_node(pos, {name = "mailbox:mailbox" })
+	      mailbox.after_place_free(pos, player)
+	   else
+	      minetest.chat_send_player(player:get_player_name(), "Your mailbox is not empty!")
+	   end
+	end
 	if fields.books_only then
 		local pos = minetest.string_to_pos(formname:sub(17))
 		local node = minetest.get_node(pos)
@@ -66,7 +80,10 @@ mailbox.after_place_node = function(pos, placer, _)
 end
 
 mailbox.on_rightclick_free = function(pos, _, clicker, _)
-   minetest.swap_node(pos, {name = "mailbox:mailbox" })
+   local node = minetest.get_node(pos)
+   node.name = "mailbox:mailbox"
+   minetest.swap_node(pos, node) -- preserve Facedir
+--   minetest.swap_node(pos, {name = "mailbox:mailbox" })
    mailbox.after_place_node(pos, clicker)
 end
 
