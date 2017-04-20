@@ -65,20 +65,6 @@ mailbox.after_place_node = function(pos, placer, _)
 	inv:set_size("drop", 1)
 end
 
-mailbox.on_rightclick_free = function(pos, _, clicker, _)
-   minetest.swap_node(pos, {name = "mailbox:mailbox" })
-   mailbox.after_place_node(pos, clicker)
-end
-
-mailbox.after_place_free = function(pos, placer, _)
-	local meta = minetest.get_meta(pos)
-	local player_name = placer:get_player_name()
-
-	-- meta:set_string("owner", player_name)
-	meta:set_string("infotext", "Free Mailbox, right-click to claim")
-end
-
-
 mailbox.on_rightclick = function(pos, _, clicker, _)
 	local meta = minetest.get_meta(pos)
 	local player = clicker:get_player_name()
@@ -148,28 +134,6 @@ minetest.register_node("mailbox:mailbox", {
 	on_metadata_inventory_put = mailbox.on_metadata_inventory_put,
 	allow_metadata_inventory_put = mailbox.allow_metadata_inventory_put,
 })
-
-minetest.register_node("mailbox:mailbox_free", {
-	description = "Mailbox for Rent",
-	tiles = {
-		"mailbox_mailbox_free_top.png", "mailbox_mailbox_free_bottom.png",
-		"mailbox_mailbox_free_side.png", "mailbox_mailbox_free_side.png",
-		"mailbox_mailbox_free.png", "mailbox_mailbox_free.png",
-	},
-	groups = {cracky = 3, oddly_breakable_by_hand = 1},
-	on_rotate = screwdriver.rotate_simple,
-	sounds = default.node_sound_defaults(),
-	paramtype2 = "facedir",
-
-	after_place_node = mailbox.after_place_free,
-	on_rightclick = mailbox.on_rightclick_free,
-	can_dig = mailbox.can_dig,
---	on_metadata_inventory_put = mailbox.on_metadata_inventory_put,
---	allow_metadata_inventory_put = mailbox.allow_metadata_inventory_put,
-
-})
-
-
 
 minetest.register_node("mailbox:letterbox", {
 	description = "Letterbox (you hacker you!)",
