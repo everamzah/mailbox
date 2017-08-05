@@ -3,6 +3,11 @@
      GPL3 ]]
 
 local mailbox = {}
+
+-- Load support for intllib.
+local MP = minetest.get_modpath(minetest.get_current_modname())
+local S, NS = dofile(MP.."/intllib.lua")
+
 screwdriver = screwdriver or {}
 
 
@@ -16,7 +21,7 @@ function mailbox.get_formspec(pos, owner, fs_type)
 
 	if fs_type == 1 then
 		return "size[8,9.5]" .. xbg .. default.get_hotbar_bg(0, 5.5) ..
-			"checkbox[0,0;books_only;Only allow written books;" .. selected .. "]" ..
+			"checkbox[0,0;books_only;"..S("Only allow written books")..";" .. selected .. "]" ..
 			"list[nodemeta:" .. spos .. ";mailbox;0,1;8,4;]" ..
 			"list[current_player;main;0,5.5;8,1;]" ..
 			"list[current_player;main;0,6.75;8,3;8]" ..
@@ -25,7 +30,7 @@ function mailbox.get_formspec(pos, owner, fs_type)
 			"button_exit[7,0;1,1;exit;X]"
 	else
 		return "size[8,5.5]" .. xbg .. default.get_hotbar_bg(0, 1.5) ..
-			"label[0,0;Send your goods\nto " .. owner .. " :]" ..
+			"label[0,0;"..S("Send your goods\nto: @1", owner).."]" ..
 			"list[nodemeta:" .. spos .. ";drop;3.5,0;1,1;]" ..
 			"list[current_player;main;0,1.5;8,1;]" ..
 			"list[current_player;main;0,2.75;8,3;8]" ..
@@ -58,7 +63,7 @@ mailbox.after_place_node = function(pos, placer, _)
 	local player_name = placer:get_player_name()
 
 	meta:set_string("owner", player_name)
-	meta:set_string("infotext", player_name.."'s Mailbox")
+	meta:set_string("infotext", S("@1's Mailbox", player_name))
 
 	local inv = meta:get_inventory()
 	inv:set_size("mailbox", 8*4)
@@ -109,7 +114,7 @@ mailbox.allow_metadata_inventory_put = function(pos, listname, index, stack, pla
 		if inv:room_for_item("mailbox", stack) then
 			return -1
 		else
-			minetest.chat_send_player(player:get_player_name(), "Mailbox full.")
+			minetest.chat_send_player(player:get_player_name(), S("Mailbox full."))
 			return 0
 		end
 	end
@@ -118,7 +123,7 @@ end
 
 
 minetest.register_node("mailbox:mailbox", {
-	description = "Mailbox",
+	description = S("Mailbox"),
 	tiles = {
 		"mailbox_mailbox_top.png", "mailbox_mailbox_bottom.png",
 		"mailbox_mailbox_side.png", "mailbox_mailbox_side.png",
@@ -136,7 +141,7 @@ minetest.register_node("mailbox:mailbox", {
 })
 
 minetest.register_node("mailbox:letterbox", {
-	description = "Letterbox (you hacker you!)",
+	description = S("Letterbox (you hacker you!)"),
 	tiles = {
 		"mailbox_letterbox_top.png", "mailbox_letterbox_bottom.png",
 		"mailbox_letterbox_side.png", "mailbox_letterbox_side.png",
